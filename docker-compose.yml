@@ -17,7 +17,7 @@ services:
     networks:
       - carbooking-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -42,6 +42,8 @@ services:
         condition: service_healthy
     networks:
       - carbooking-network
+    volumes:
+      - ./proto:/proto
     restart: unless-stopped
 
   # Booking Service (gRPC)
@@ -64,6 +66,8 @@ services:
         condition: service_healthy
     networks:
       - carbooking-network
+    volumes:
+      - ./proto:/proto
     restart: unless-stopped
 
   # Integration Service (gRPC + REST)
@@ -91,6 +95,8 @@ services:
         condition: service_healthy
     networks:
       - carbooking-network
+    volumes:
+      - ./proto:/proto
     restart: unless-stopped
 
   # API Gateway
@@ -106,14 +112,15 @@ services:
       INTEGRATION_SERVICE_HOST: integration-service:50053
     ports:
       - "5000:5000"
-    volumes:
-      - uploads_data:/app/uploads
     depends_on:
       - car-service
       - booking-service
       - integration-service
     networks:
       - carbooking-network
+    volumes:
+      - uploads_data:/app/uploads
+      - ./proto:/proto
     restart: unless-stopped
 
   # Frontend
