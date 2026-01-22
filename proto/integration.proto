@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package integration;
+
+service IntegrationService {
+  rpc SyncToCalendar (SyncToCalendarRequest) returns (SyncResponse);
+  rpc GetIntegrationStatus (GetIntegrationStatusRequest) returns (IntegrationStatusResponse);
+  rpc ConfigureIntegration (ConfigureIntegrationRequest) returns (ConfigureResponse);
+  rpc RemoveIntegration (RemoveIntegrationRequest) returns (RemoveResponse);
+}
+
+message SyncToCalendarRequest {
+  string dealer_id = 1;
+  int32 booking_id = 2;
+  string service_name = 3; // 'google_calendar', etc.
+  string action = 4; // 'create', 'delete'
+}
+
+message SyncResponse {
+  bool success = 1;
+  string message = 2;
+  string external_event_id = 3;
+}
+
+message GetIntegrationStatusRequest {
+  string dealer_id = 1;
+  string service_name = 2; // Optional filter
+}
+
+message Integration {
+  int32 id = 1;
+  string dealer_id = 2;
+  string service_name = 3;
+  string status = 4;
+  string created_at = 5;
+}
+
+message IntegrationStatusResponse {
+  repeated Integration integrations = 1;
+}
+
+message ConfigureIntegrationRequest {
+  string dealer_id = 1;
+  string service_name = 2;
+  string credentials = 3; // JSON string with OAuth tokens
+}
+
+message ConfigureResponse {
+  bool success = 1;
+  string message = 2;
+  Integration integration = 3;
+}
+
+message RemoveIntegrationRequest {
+  string dealer_id = 1;
+  string service_name = 2;
+}
+
+message RemoveResponse {
+  bool success = 1;
+  string message = 2;
+}

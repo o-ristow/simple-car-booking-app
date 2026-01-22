@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+package booking;
+
+service BookingService {
+  rpc CreateBooking (CreateBookingRequest) returns (BookingResponse);
+  rpc GetBookings (GetBookingsRequest) returns (BookingsResponse);
+  rpc CancelBooking (CancelBookingRequest) returns (CancelResponse);
+  rpc CheckAvailability (CheckAvailabilityRequest) returns (AvailabilityResponse);
+}
+
+message Booking {
+  int32 id = 1;
+  int32 car_id = 2;
+  string customer_name = 3;
+  string customer_email = 4;
+  string customer_phone = 5;
+  string booking_start = 6;
+  string booking_end = 7;
+  string cancellation_token = 8;
+  string status = 9;
+  string created_at = 10;
+  // Additional fields for joined data
+  string car_make = 11;
+  string car_model = 12;
+}
+
+message CreateBookingRequest {
+  int32 car_id = 1;
+  string customer_name = 2;
+  string customer_email = 3;
+  string customer_phone = 4;
+  string booking_start = 5;
+  string booking_end = 6;
+}
+
+message BookingResponse {
+  bool success = 1;
+  string message = 2;
+  Booking booking = 3;
+}
+
+message GetBookingsRequest {
+  int32 car_id = 1; // Optional filter
+  string status = 2; // Optional filter: 'active', 'cancelled'
+  string dealer_id = 3; // Optional filter
+}
+
+message BookingsResponse {
+  repeated Booking bookings = 1;
+}
+
+message CancelBookingRequest {
+  int32 id = 1;
+  string cancellation_token = 2; // Required for customer cancellation
+}
+
+message CancelResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message CheckAvailabilityRequest {
+  int32 car_id = 1;
+  string start_time = 2;
+  string end_time = 3;
+}
+
+message AvailabilityResponse {
+  bool available = 1;
+  string message = 2;
+  repeated ConflictInfo conflicts = 3;
+}
+
+message ConflictInfo {
+  string type = 1; // 'booking' or 'blocked'
+  string start_time = 2;
+  string end_time = 3;
+  string reason = 4;
+}
